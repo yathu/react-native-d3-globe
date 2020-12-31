@@ -1,5 +1,5 @@
 import React, {useMemo, useState, useEffect} from 'react';
-import {StyleSheet, View, Animated} from 'react-native';
+import {StyleSheet, View, Animated, PanResponder} from 'react-native';
 
 //LIBRARIES
 import Svg, {G, Path, Circle} from 'react-native-svg';
@@ -28,6 +28,12 @@ const Map = (props) => {
   const [prevScale, setPrevScale] = useState(1);
   const [lastScaleOffset, setLastScaleOffset] = useState(0);
 
+  const [rotateX, setrotateX] = useState();
+  const [rotateY, setrotateY] = useState();
+  // const [rotateXY, setrotateXY] = useState([]);
+
+  // console.log(props, 'props=>');
+
   const {dimensions, data, date, colorize, stat} = props;
 
   //Gesture Handlers
@@ -47,6 +53,9 @@ const Map = (props) => {
   };
 
   const panGestureHandler = (event) => {
+    console.log('event', event.nativeEvent);
+    setrotateX(event.nativeEvent.x);
+    setrotateX(event.nativeEvent.y);
     setTranslateX(-event.nativeEvent.translationX / scale + lastTranslateX);
     setTranslateY(-event.nativeEvent.translationY / scale + lastTranslateY);
   };
@@ -111,7 +120,8 @@ const Map = (props) => {
 
     const projection = d3
       .geoAzimuthalEqualArea()
-      .rotate([90, 280])
+      // .rotate([0, -90])
+      .rotate([rotateX, rotateY])
       .fitSize([mapExtent, mapExtent], {
         type: 'FeatureCollection',
         features: COUNTRIES,
@@ -124,7 +134,7 @@ const Map = (props) => {
     const windowPaths = COUNTRIES.map(geoPath);
 
     return windowPaths;
-  }, [dimensions]);
+  }, [dimensions, rotateX, rotateY]);
 
   useEffect(() => {
     setCountryList(
@@ -164,38 +174,51 @@ const Map = (props) => {
         );
       }),
     );
-  }, []);
+  }, [rotateX, rotateY]);
 
   return (
-    <View style={styles.container}>
-      <Svg
-        width={dimensions.width}
-        height={dimensions.height / 2}
-        style={styles.svg}>
-        <G>
-          <Circle
-            cx={dimensions.width / 2}
-            cy={mapExtent / 2}
-            r={mapExtent / 2}
-            fill={COLORS.lightPrimary}
-          />
-          {countryList.map((x) => x)}
-        </G>
-      </Svg>
+    <View
+    // style={{transform: [{rotateX: rotateX}, {rotateY: rotateY},]}}
+    // {...panResponder.panHandlers}
+    >
+      <PanGestureHandler
+        onGestureEvent={(e) => panGestureHandler(e)}
+        onHandlerStateChange={(e) => panStateHandler(e)}>
+        <PinchGestureHandler
+          onGestureEvent={(e) => pinchGestureHandler(e)}
+          onHandlerStateChange={(e) => pinchStateHandler(e)}>
+          <Svg
+            width={dimensions.width}
+            height={dimensions.height / 2}
+            style={styles.svg}>
+            <G
 
-      <Button
-        buttonStyle={{
-          opacity: buttonOpacity,
-        }}
-        onPress={initializeMap}
-        text={<>&#x21bb;</>}
-      />
+            // transform={`scale(${scale}) translate(${-translateX},${-translateY})`}
+            >
+              <Circle
+                cx={dimensions.width / 2}
+                cy={mapExtent / 2}
+                r={mapExtent / 2}
+                fill={COLORS.lightPrimary}
+              />
+              {countryList.map((x) => x)}
+            </G>
+          </Svg>
+        </PinchGestureHandler>
+      </PanGestureHandler>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   svg: {},
+  rotateView: {
+    width: 100,
+    height: 400,
+    backgroundColor: 'black',
+    shadowOffset: {height: 1, width: 1},
+    shadowOpacity: 0.2,
+  },
 });
 
 export default Map;
