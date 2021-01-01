@@ -118,7 +118,7 @@ const Map = (props) => {
     const projection = d3
       .geoAzimuthalEqualArea()
       // .rotate([0, -90])
-      .rotate([rotateX, rotateY])
+      .rotate([-rotateX, -rotateY])
       .fitSize([mapExtent, mapExtent], {
         type: 'FeatureCollection',
         features: COUNTRIES,
