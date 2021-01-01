@@ -30,9 +30,6 @@ const Map = (props) => {
 
   const [rotateX, setrotateX] = useState();
   const [rotateY, setrotateY] = useState();
-  // const [rotateXY, setrotateXY] = useState([]);
-
-  // console.log(props, 'props=>');
 
   const {dimensions, data, date, colorize, stat} = props;
 
@@ -177,10 +174,7 @@ const Map = (props) => {
   }, [rotateX, rotateY]);
 
   return (
-    <View
-    // style={{transform: [{rotateX: rotateX}, {rotateY: rotateY},]}}
-    // {...panResponder.panHandlers}
-    >
+    <View>
       <PanGestureHandler
         onGestureEvent={(e) => panGestureHandler(e)}
         onHandlerStateChange={(e) => panStateHandler(e)}>
@@ -192,7 +186,6 @@ const Map = (props) => {
             height={dimensions.height / 2}
             style={styles.svg}>
             <G
-
             // transform={`scale(${scale}) translate(${-translateX},${-translateY})`}
             >
               <Circle

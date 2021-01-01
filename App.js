@@ -6,68 +6,21 @@ import {
   Animated,
   PanResponder,
   Text,
+  SafeAreaView,
 } from 'react-native';
 
-//COMPONENTS
 import Map from './components/Map';
 
-//CONSTANTS
 import COLORS from './constants/Colors';
-
-//FUNCTIONS
 import movingAverage from './functions/movingAverage';
-
-//LIBRARIES
 import * as d3 from 'd3';
-
-//DATA
 import covidData_raw from './assets/data/who_data.json';
 
-// const AnimatedMapView = Animated.createAnimatedComponent(Map);
 
 export default function App(props) {
-  // const [rotateX, setrotateX] = useState(new Animated.Value(-90));
-  // const [rotateZ, setrotateZ] = useState(new Animated.Value(0));
-  // const [fromXY, setfromXY] = useState(undefined);
-  // const [valueXY, setvalueXY] = useState(undefined);
 
   const [rotateX, setrotateX] = React.useState(0);
   const [rotateY, setrotateY] = React.useState(0);
-
-  // const onMoveEnd = () => {
-  //   this.setState({
-  //     fromXY: undefined,
-  //   });
-  // };
-
-  // const onMove = (e) => {
-  //   let {pageX, pageY} = e.nativeEvent;
-  //   if (!fromXY) {
-  //     setfromXY([pageX, pageY]);
-  //     setvalueXY([rotateZ.__getValue(), rotateX.__getValue()]);
-
-  //     // this.setState({
-  //     //   fromXY: [pageX, pageY],
-  //     //   valueXY: [rotateZ.__getValue(), rotateX.__getValue()],
-  //     // });
-  //   } else {
-  //     rotateZ.setValue(valueXY[0] + (pageX - fromXY[0]) / 2);
-  //     rotateX.setValue(valueXY[1] + (pageY - fromXY[1]) / 2);
-  //   }
-  // };
-
-  // const position = useRef(new Animated.ValueXY()).current;
-  // const panResponder = React.useMemo(
-  //   () =>
-  //     PanResponder.create({
-  //       onStartShouldSetPanResponder: (evt, gestureState) => true,
-  //       onPanResponderMove: (evt, gestureState) => {
-  //         position.setValue({x: gestureState.dx, y: gestureState.dy});
-  //       },
-  //       onPanResponderRelease: (evt, gestureState) => {},
-  //     }),
-  //   [],
-  // );
 
   const handlePanResponderMove = (e, gestureState) => {
     console.log(rotateX, 'gestureState');
@@ -78,10 +31,6 @@ export default function App(props) {
 
     setrotateX(dx);
     setrotateY(dy);
-
-    // refView.setNativeProps({
-    //   style: {transform: [{perspective: 1000}, {rotateX: x}, {rotateY: y}]},
-    // });
   };
 
   const panResponder = React.useMemo(
@@ -97,9 +46,6 @@ export default function App(props) {
   );
 
   const dimensions = Dimensions.get('window');
-
-  const [stat, setStat] = useState('avg_confirmed');
-  const [date, setDate] = useState('2020-04-24');
 
   //Data Manipulation
   const covidData = useMemo(() => {
@@ -137,32 +83,22 @@ export default function App(props) {
   React.useEffect(() => {}, [handlePanResponderMove, setrotateX]);
 
   return (
-    <View
-      {...panResponder.panHandlers}
-      // ref={(component) => (refView = component)}
-    >
-      {/* <Animated.View style={styles.container} {...panResponder.panHandlers}>
-        <View
-          ref={(component) => (refView = component)}
-          style={styles.rotateView}>
-        </View>
-      </Animated.View> */}
-
-      {/* <Animated.View>
-        <Text>ddd</Text>
-      </Animated.View> */}
-
-      {/* <Text>{rotateX.toString}</Text> */}
-      <Map
-        dimensions={dimensions}
-        data={covidData}
-        date={date}
-        colorize={colorize}
-        stat={stat}
-        rotateX={rotateX}
-        rotateY={rotateY}
-      />
-    </View>
+    <SafeAreaView>
+      <View
+        {...panResponder.panHandlers}
+      >
+        
+        <Map
+          dimensions={dimensions}
+          data={covidData}
+          date={date}
+          colorize={colorize}
+          stat={stat}
+          rotateX={rotateX}
+          rotateY={rotateY}
+        />
+      </View>
+    </SafeAreaView>
   );
 }
 
