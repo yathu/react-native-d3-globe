@@ -16,36 +16,10 @@ import movingAverage from './functions/movingAverage';
 import * as d3 from 'd3';
 import covidData_raw from './assets/data/who_data.json';
 
-
 export default function App(props) {
-
-  const [rotateX, setrotateX] = React.useState(0);
-  const [rotateY, setrotateY] = React.useState(0);
-
-  const handlePanResponderMove = (e, gestureState) => {
-    console.log(rotateX, 'gestureState');
-
-    const {dx, dy} = gestureState;
-    const y = `${dx}deg`;
-    const x = `${-dy}deg`;
-
-    setrotateX(dx);
-    setrotateY(dy);
-  };
-
-  const panResponder = React.useMemo(
-    () =>
-      PanResponder.create({
-        onMoveShouldSetPanResponder: (evt, gestureState) => true,
-        onPanResponderMove: (evt, gestureState) => {
-          handlePanResponderMove(evt, gestureState);
-        },
-        onPanResponderRelease: (evt, gestureState) => {},
-      }),
-    [rotateX],
-  );
-
   const dimensions = Dimensions.get('window');
+  const [stat, setStat] = useState('avg_confirmed');
+  const [date, setDate] = useState('2020-04-24');
 
   //Data Manipulation
   const covidData = useMemo(() => {
@@ -80,22 +54,15 @@ export default function App(props) {
     return colorScale;
   });
 
-  React.useEffect(() => {}, [handlePanResponderMove, setrotateX]);
-
   return (
     <SafeAreaView>
-      <View
-        {...panResponder.panHandlers}
-      >
-        
+      <View>
         <Map
           dimensions={dimensions}
           data={covidData}
           date={date}
           colorize={colorize}
           stat={stat}
-          rotateX={rotateX}
-          rotateY={rotateY}
         />
       </View>
     </SafeAreaView>
