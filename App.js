@@ -1,12 +1,10 @@
-import React, {useState, useMemo} from 'react';
+import React, {useState} from 'react';
 import {View, Dimensions, SafeAreaView} from 'react-native';
 
 import Map from './components/Map';
 
 export default function App() {
   const dimensions = Dimensions.get('window');
-  const [stat] = useState('avg_confirmed');
-  const [] = useState('2020-04-24');
 
   //first should be longitude
   const coordinates_data = [
