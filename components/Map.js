@@ -1,5 +1,5 @@
 import React, {useMemo, useState, useEffect} from 'react';
-import {StyleSheet, View, Animated} from 'react-native';
+import {StyleSheet, View, Animated, InteractionManager} from 'react-native';
 
 //LIBRARIES
 import Svg, {G, Path, Circle, Ellipse} from 'react-native-svg';
@@ -34,8 +34,6 @@ const Map = (props) => {
   const [markers, setMarkers] = useState([]);
 
   const {dimensions, coordinates} = props;
-
-  // console.log(COUNTRIES[0], 'COUNTRIES__');
 
   //Gesture Handlers
   const panStateHandler = (event) => {
@@ -109,14 +107,8 @@ const Map = (props) => {
 
     const projection = d3
       .geoOrthographic()
-      // .geoAzimuthalEqualArea()
-      // .rotate([0, -90])
       .rotate([-rotateX, -rotateY])
       .scale(mapExtent / 2)
-      // .fitSize([mapExtent, mapExtent], {
-      //   type: 'FeatureCollection',
-      //   features: COUNTRIES,
-      // })
 
       .clipAngle(clipAngle)
       .translate([dimensions.width / 2, mapExtent / 2]);
@@ -129,17 +121,6 @@ const Map = (props) => {
       console.log(coordinates, 'coordinates=>');
       const xdata = projection(coordinates)[0]; //first should be longitude
       const ydata = projection(coordinates)[1];
-      console.log(xdata, ydata, 'xydata');
-
-      // return (
-      //   <Circle
-      //     key={coordinates[0]}
-      //     cx={xdata}
-      //     cy={ydata}
-      //     r={7}
-      //     fill="yellow"
-      //   />
-      // );
 
       return [xdata, ydata];
     });
@@ -150,13 +131,6 @@ const Map = (props) => {
   }, [dimensions, rotateX, rotateY]);
 
   useEffect(() => {
-    // InteractionManager.runAfterInteractions(() => {
-    //   setrotateX(rotateX + 1);
-    //   console.log(rotateX, 'rotete');
-    // });
-
-    console.log(pointers, 'pointers--');
-
     setCountryList(
       countryPaths.map((path, i) => {
         return (
