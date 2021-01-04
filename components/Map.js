@@ -1,8 +1,8 @@
 import React, {useMemo, useState, useEffect} from 'react';
-import {StyleSheet, View, Animated, PanResponder} from 'react-native';
+import {StyleSheet, View, Animated} from 'react-native';
 
 //LIBRARIES
-import Svg, {G, Path, Circle} from 'react-native-svg';
+import Svg, {G, Path, Circle, Ellipse} from 'react-native-svg';
 import * as d3 from 'd3';
 import {
   PanGestureHandler,
@@ -15,7 +15,6 @@ import {COUNTRIES} from '../constants/CountryShapes';
 import COLORS from '../constants/Colors';
 
 //COMPONENTS
-import Button from './Button';
 
 const Map = (props) => {
   const [countryList, setCountryList] = useState([]);
@@ -23,15 +22,27 @@ const Map = (props) => {
   const [translateY, setTranslateY] = useState(0);
   const [lastTranslateX, setLastTranslateX] = useState(0);
   const [lastTranslateY, setLastTranslateY] = useState(0);
-  const [buttonOpacity, _] = useState(new Animated.Value(0));
+  const [buttonOpacity] = useState(new Animated.Value(0));
   const [scale, setScale] = useState(1);
   const [prevScale, setPrevScale] = useState(1);
   const [lastScaleOffset, setLastScaleOffset] = useState(0);
 
-  const [rotateX, setrotateX] = useState();
-  const [rotateY, setrotateY] = useState();
+  const [rotateX, setrotateX] = useState(0);
+  const [rotateY, setrotateY] = useState(0);
 
-  const {dimensions, data, date, colorize, stat} = props;
+  const [pointers, setPointers] = useState([]);
+  const [markers, setMarkers] = useState([]);
+
+  let {dimensions, data, date} = props;
+
+  //first should be longitude
+  const coordinates_data = [
+    [19.744822, -34.633016],
+    [80.229349, 9.818078],
+    [-98.862052, 37.848794],
+  ];
+
+  // console.log(COUNTRIES[0], 'COUNTRIES__');
 
   //Gesture Handlers
   const panStateHandler = (event) => {
@@ -50,9 +61,9 @@ const Map = (props) => {
   };
 
   const panGestureHandler = (event) => {
-    console.log('event', event.nativeEvent);
-    setrotateX(event.nativeEvent.x);
-    setrotateX(event.nativeEvent.y);
+    // console.log('event', event.nativeEvent);
+    setrotateX(event.nativeEvent.x / 5);
+    setrotateY(event.nativeEvent.y / 5);
     setTranslateX(-event.nativeEvent.translationX / scale + lastTranslateX);
     setTranslateY(-event.nativeEvent.translationY / scale + lastTranslateY);
   };
@@ -92,18 +103,6 @@ const Map = (props) => {
   };
 
   //Initialize Map Transforms
-  const initializeMap = () => {
-    setTranslateX(0);
-    setTranslateY(0);
-    setScale(1);
-    setPrevScale(1);
-    setLastScaleOffset(0);
-    Animated.timing(buttonOpacity, {
-      toValue: 0,
-      duration: 1000,
-      useNativeDriver: true,
-    }).start();
-  };
 
   //Create Map Paths
   const mapExtent = useMemo(() => {
@@ -116,7 +115,7 @@ const Map = (props) => {
     const clipAngle = 150;
 
     const projection = d3
-      .geoAzimuthalEqualArea()
+      .geoOrthographic()
       // .rotate([0, -90])
       .rotate([-rotateX, -rotateY])
       .fitSize([mapExtent, mapExtent], {
@@ -130,43 +129,73 @@ const Map = (props) => {
 
     const windowPaths = COUNTRIES.map(geoPath);
 
+    const pointers = coordinates_data.map((coordinates) => {
+      console.log(coordinates, 'coordinates=>');
+      const xdata = projection(coordinates)[0]; //first should be longitude
+      const ydata = projection(coordinates)[1];
+      console.log(xdata, ydata, 'xydata');
+
+      // return (
+      //   <Circle
+      //     key={coordinates[0]}
+      //     cx={xdata}
+      //     cy={ydata}
+      //     r={7}
+      //     fill="yellow"
+      //   />
+      // );
+
+      return [xdata, ydata];
+    });
+
+    setPointers(pointers);
+
     return windowPaths;
   }, [dimensions, rotateX, rotateY]);
 
   useEffect(() => {
+    // InteractionManager.runAfterInteractions(() => {
+    //   setrotateX(rotateX + 1);
+    //   console.log(rotateX, 'rotete');
+    // });
+
+    console.log(pointers, 'pointers--');
+
     setCountryList(
       countryPaths.map((path, i) => {
-        const curCountry = COUNTRIES[i].properties.name;
+        // const curCountry = COUNTRIES[i].properties.name;
 
-        const isCountryNameInData = data.some(
-          (country) => country.name === curCountry,
-        );
+        // console.log(COUNTRIES[i], '----------');
 
-        const curCountryData = isCountryNameInData
-          ? data.find((country) => country.name === curCountry)['data']
-          : null;
+        // const isCoordinateInData = coordinates_data.some((coordinate) =>
+        //   COUNTRIES[i].geometry.coordinates.includes(coordinate),
+        // );
 
-        const isDataAvailable = isCountryNameInData
-          ? curCountryData.some((data) => data.date === date)
-          : false;
-
-        const dateIndex = isDataAvailable
-          ? curCountryData.findIndex((x) => x.date === date)
-          : null;
+        // console.log(isCoordinateInData, 'isCoordinateInData');
 
         return (
           <Path
-            key={COUNTRIES[i].properties.name}
+            key={i}
             d={path}
             stroke={COLORS.greyLight}
             strokeOpacity={0.3}
             strokeWidth={0.6}
-            fill={
-              isDataAvailable
-                ? colorize(curCountryData[dateIndex][stat])
-                : COLORS.greyLight
-            }
-            opacity={isDataAvailable ? 1 : 0.4}
+            fill={COLORS.greyLight}
+            opacity={1}
+          />
+        );
+      }),
+    );
+
+    setMarkers(
+      pointers.map((xydata) => {
+        return (
+          <Circle
+            key={xydata[0]}
+            cx={xydata[0]}
+            cy={xydata[1]}
+            r={7}
+            fill="yellow"
           />
         );
       }),
@@ -192,9 +221,11 @@ const Map = (props) => {
                 cx={dimensions.width / 2}
                 cy={mapExtent / 2}
                 r={mapExtent / 2}
-                fill={COLORS.lightPrimary}
+                fill={COLORS.primary}
               />
               {countryList.map((x) => x)}
+
+              {markers.map((marker) => marker)}
             </G>
           </Svg>
         </PinchGestureHandler>

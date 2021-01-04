@@ -28,11 +28,15 @@ export default function App(props) {
       data: covidData_raw[key],
     }));
 
+    // console.log('countriesAsArray', JSON.stringify(countriesAsArray));
+
     const windowSize = 7;
 
     const countriesWithAvg = countriesAsArray.map((country) => ({
       name: country.name,
       data: [...movingAverage(country.data, windowSize)],
+
+      // data: [...movingAverage(country.data, windowSize)],
     }));
 
     const onlyCountriesWithData = countriesWithAvg.filter(
@@ -41,6 +45,8 @@ export default function App(props) {
 
     return onlyCountriesWithData;
   }, []);
+
+  // console.log('covidData:', JSON.stringify(covidData));
 
   const maxY = useMemo(() => {
     return d3.max(covidData, (country) => d3.max(country.data, (d) => d[stat]));
