@@ -21,6 +21,13 @@ export default function App(props) {
   const [stat, setStat] = useState('avg_confirmed');
   const [date, setDate] = useState('2020-04-24');
 
+  //first should be longitude
+  const coordinates_data = [
+    [19.744822, -34.633016],
+    [80.229349, 9.818078],
+    [-98.862052, 37.848794],
+  ];
+
   //Data Manipulation
   const covidData = useMemo(() => {
     const countriesAsArray = Object.keys(covidData_raw).map((key) => ({
@@ -69,6 +76,7 @@ export default function App(props) {
           date={date}
           colorize={colorize}
           stat={stat}
+          coordinates={coordinates_data}
         />
       </View>
     </SafeAreaView>

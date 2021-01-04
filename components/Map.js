@@ -33,14 +33,7 @@ const Map = (props) => {
   const [pointers, setPointers] = useState([]);
   const [markers, setMarkers] = useState([]);
 
-  let {dimensions, data, date} = props;
-
-  //first should be longitude
-  const coordinates_data = [
-    [19.744822, -34.633016],
-    [80.229349, 9.818078],
-    [-98.862052, 37.848794],
-  ];
+  const {dimensions, coordinates} = props;
 
   // console.log(COUNTRIES[0], 'COUNTRIES__');
 
@@ -124,7 +117,7 @@ const Map = (props) => {
       //   type: 'FeatureCollection',
       //   features: COUNTRIES,
       // })
-    
+
       .clipAngle(clipAngle)
       .translate([dimensions.width / 2, mapExtent / 2]);
 
@@ -132,7 +125,7 @@ const Map = (props) => {
 
     const windowPaths = COUNTRIES.map(geoPath);
 
-    const pointers = coordinates_data.map((coordinates) => {
+    const pointers = coordinates.map((coordinates) => {
       console.log(coordinates, 'coordinates=>');
       const xdata = projection(coordinates)[0]; //first should be longitude
       const ydata = projection(coordinates)[1];
@@ -166,16 +159,6 @@ const Map = (props) => {
 
     setCountryList(
       countryPaths.map((path, i) => {
-        // const curCountry = COUNTRIES[i].properties.name;
-
-        // console.log(COUNTRIES[i], '----------');
-
-        // const isCoordinateInData = coordinates_data.some((coordinate) =>
-        //   COUNTRIES[i].geometry.coordinates.includes(coordinate),
-        // );
-
-        // console.log(isCoordinateInData, 'isCoordinateInData');
-
         return (
           <Path
             key={i}
