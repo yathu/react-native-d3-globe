@@ -112,16 +112,19 @@ const Map = (props) => {
   }, [dimensions]);
 
   const countryPaths = useMemo(() => {
-    const clipAngle = 150;
+    const clipAngle = 90;
 
     const projection = d3
       .geoOrthographic()
+      // .geoAzimuthalEqualArea()
       // .rotate([0, -90])
       .rotate([-rotateX, -rotateY])
-      .fitSize([mapExtent, mapExtent], {
-        type: 'FeatureCollection',
-        features: COUNTRIES,
-      })
+      .scale(mapExtent / 2)
+      // .fitSize([mapExtent, mapExtent], {
+      //   type: 'FeatureCollection',
+      //   features: COUNTRIES,
+      // })
+    
       .clipAngle(clipAngle)
       .translate([dimensions.width / 2, mapExtent / 2]);
 
@@ -177,7 +180,7 @@ const Map = (props) => {
           <Path
             key={i}
             d={path}
-            stroke={COLORS.greyLight}
+            stroke={COLORS.greyDark}
             strokeOpacity={0.3}
             strokeWidth={0.6}
             fill={COLORS.greyLight}
@@ -195,6 +198,7 @@ const Map = (props) => {
             cx={xydata[0]}
             cy={xydata[1]}
             r={7}
+            opacity={0.5}
             fill="yellow"
           />
         );
@@ -215,7 +219,8 @@ const Map = (props) => {
             height={dimensions.height / 2}
             style={styles.svg}>
             <G
-            // transform={`scale(${scale}) translate(${-translateX},${-translateY})`}
+              transform={`scale(1)`}
+              // transform={`scale(${scale}) translate(${-translateX},${-translateY})`}
             >
               <Circle
                 cx={dimensions.width / 2}
