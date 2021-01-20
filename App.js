@@ -16,7 +16,7 @@ export default function App() {
   return (
     <SafeAreaView>
       <View>
-        <Map dimensions={dimensions} coordinates={coordinates_data} />
+        <Map dimensions={dimensions} data={coordinates_data} />
       </View>
     </SafeAreaView>
   );

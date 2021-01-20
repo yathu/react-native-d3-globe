@@ -30,7 +30,7 @@ const Map = (props) => {
   const [pointers, setPointers] = useState([]);
   const [markers, setMarkers] = useState([]);
 
-  const {dimensions, coordinates} = props;
+  const {dimensions, data} = props;
 
   //Gesture Handlers
   const panStateHandler = (event) => {
@@ -110,12 +110,23 @@ const Map = (props) => {
 
     const windowPaths = COUNTRIES.map(geoPath);
 
-    const pointers = coordinates.map((coordinates) => {
-      console.log(coordinates, 'coordinates=>');
-      const xdata = projection(coordinates)[0]; //first should be longitude
-      const ydata = projection(coordinates)[1];
+    const pointers = data.map((data: any) => {
+      //calculate xy position from coordinates (long,lat)
+      const lang = data[0];
+      const lat = data[1];
 
-      return [xdata, ydata];
+      const xdata = projection([lang, lat])[0]; //first should be longitude
+      const ydata = projection([lang, lat])[1];
+
+      //if marker out of circle or back side marker will hide
+      const centerPos = projection.invert([
+        dimensions.width / 2,
+        mapExtent / 2,
+      ]);
+      const d = d3.geoDistance([lang, lat], centerPos);
+      const opacity = d > 1.57 ? 0 : 1;
+
+      return [xdata, ydata, opacity];
     });
 
     setPointers(pointers);
@@ -148,7 +159,7 @@ const Map = (props) => {
             cx={xydata[0]}
             cy={xydata[1]}
             r={7}
-            opacity={0.5}
+            opacity={xydata[2]}
             fill="yellow"
           />
         );
