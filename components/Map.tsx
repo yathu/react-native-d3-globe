@@ -144,7 +144,7 @@ const Map = (props) => {
             stroke={COLORS.greyDark}
             strokeOpacity={0.3}
             strokeWidth={0.6}
-            fill={COLORS.greyLight}
+            fill={COLORS.contry}
             opacity={1}
           />
         );
@@ -187,7 +187,7 @@ const Map = (props) => {
                 cx={dimensions.width / 2}
                 cy={mapExtent / 2}
                 r={mapExtent / 2}
-                fill={COLORS.primary}
+                fill={COLORS.sea}
               />
               {countryList.map((x) => x)}
 
