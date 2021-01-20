@@ -27,9 +27,6 @@ const Map = (props) => {
   const [prevScale, setPrevScale] = useState(1);
   const [lastScaleOffset, setLastScaleOffset] = useState(0);
 
-  const [rotateX, setrotateX] = useState(0);
-  const [rotateY, setrotateY] = useState(0);
-
   const [pointers, setPointers] = useState([]);
   const [markers, setMarkers] = useState([]);
 
@@ -52,9 +49,6 @@ const Map = (props) => {
   };
 
   const panGestureHandler = (event) => {
-    // console.log('event', event.nativeEvent);
-    setrotateX(event.nativeEvent.x / 5);
-    setrotateY(event.nativeEvent.y / 5);
     setTranslateX(-event.nativeEvent.translationX / scale + lastTranslateX);
     setTranslateY(-event.nativeEvent.translationY / scale + lastTranslateY);
   };
@@ -100,16 +94,15 @@ const Map = (props) => {
     return dimensions.width > dimensions.height / 2
       ? dimensions.height / 2
       : dimensions.width;
-  }, [dimensions]);
+  }, [dimensions, translateX,translateY]);
 
   const countryPaths = useMemo(() => {
     const clipAngle = 90;
 
-    const projection:any = d3
+    const projection = d3
       .geoOrthographic()
-      .rotate([-rotateX, -rotateY])
+      .rotate([-translateX, translateY])
       .scale(mapExtent / 2)
-
       .clipAngle(clipAngle)
       .translate([dimensions.width / 2, mapExtent / 2]);
 
@@ -128,7 +121,7 @@ const Map = (props) => {
     setPointers(pointers);
 
     return windowPaths;
-  }, [dimensions, rotateX, rotateY]);
+  }, [dimensions,translateX,translateY]);
 
   useEffect(() => {
     setCountryList(
@@ -161,7 +154,7 @@ const Map = (props) => {
         );
       }),
     );
-  }, [rotateX, rotateY]);
+  }, [translateX,translateY]);
 
   return (
     <View>
