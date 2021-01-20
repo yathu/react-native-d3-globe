@@ -19,7 +19,7 @@ import COLORS from '../constants/Colors';
 const Map = (props) => {
   const [countryList, setCountryList] = useState([]);
   const [translateX, setTranslateX] = useState(0);
-  const [translateY, setTranslateY] = useState(0);
+  const [translateY, setTranslateY] = useState(-90);
   const [lastTranslateX, setLastTranslateX] = useState(0);
   const [lastTranslateY, setLastTranslateY] = useState(0);
   const [buttonOpacity] = useState(new Animated.Value(0));
@@ -105,7 +105,7 @@ const Map = (props) => {
   const countryPaths = useMemo(() => {
     const clipAngle = 90;
 
-    const projection = d3
+    const projection:any = d3
       .geoOrthographic()
       .rotate([-rotateX, -rotateY])
       .scale(mapExtent / 2)
